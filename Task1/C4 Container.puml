@@ -1,0 +1,61 @@
+@startuml
+!include <C4/C4_Container>
+
+Person(admin, "Администратор", "Сотрудник головного офиса с полным доступом")
+Person(doctor, "Врач", "Медицинский работник в клинике")
+Person(analyst, "Аналитик", "Бизнес-аналитик, строящий отчеты")
+Person(fintech_user, "Финтех-пользователь", "Клиент банковских услуг")
+
+System_Boundary(c1, "Будущее 2.0") {
+
+    Container(portal, "Портал самообслуживания", "React/Angular", "Веб-приложение для аналитики и отчетности")
+    Container(auth, "Сервис аутентификации", "OAuth2/OpenID Connect", "Централизованная аутентификация и авторизация")
+    
+    ContainerDb(meta_db, "Мета-база данных", "PostgreSQL", "Хранилище метаданных, моделей данных и прав доступа")
+    
+    Container(api_gateway, "API Gateway", "Kong/AWS API Gateway", "Единая точка входа для всех сервисов")
+    
+    Container(analytics_engine, "Аналитический движок", "Apache Spark/Presto", "Обработка аналитических запросов")
+    Container(data_lake, "Data Lake", "Apache Iceberg/Delta Lake", "Единое хранилище сырых данных")
+    
+    ContainerDb(dwh_modern, "Современный DWH", "ClickHouse/Redshift", "Оптимизированное хранилище для аналитики")
+    
+    Container(medical_api, "Медицинский API", "REST/gRPC", "Предоставляет доступ к медицинским данным")
+    Container(fintech_api, "Финтех API", "REST/gRPC", "Предоставляет доступ к финансовым данным")
+    Container(ai_api, "ИИ API", "REST/gRPC", "Интеграция с ИИ-сервисами")
+    
+    ContainerDb(medical_db, "Медицинская БД", "PostgreSQL", "База медицинских данных (без историй болезней)")
+    ContainerDb(fintech_db, "Финтех БД", "PostgreSQL", "База финансовых данных")
+    ContainerDb(ai_db, "ИИ БД", "PostgreSQL", "База данных ИИ-сервисов")
+    
+    Container(legacy_dwh, "Легаси DWH", "MS SQL Server 2008", "Существующее хранилище (на этапе миграции)")
+    Container(legacy_ui, "Легаси UI", "Power Builder", "Старый интерфейс для операторов")
+}
+
+' Связи между компонентами
+Rel(admin, portal, "Работает с системой")
+Rel(doctor, portal, "Просматривает отчеты")
+Rel(analyst, portal, "Строит отчеты")
+Rel(fintech_user, portal, "Использует финансовые сервисы")
+
+Rel(portal, auth, "Аутентифицирует пользователей")
+Rel(portal, api_gateway, "Отправляет запросы через")
+Rel(api_gateway, analytics_engine, "Перенаправляет аналитические запросы")
+Rel(api_gateway, medical_api, "Перенаправляет медицинские запросы")
+Rel(api_gateway, fintech_api, "Перенаправляет финансовые запросы")
+Rel(api_gateway, ai_api, "Перенаправляет ИИ-запросы")
+
+Rel(analytics_engine, data_lake, "Читает данные из")
+Rel(analytics_engine, dwh_modern, "Использует для быстрых запросов")
+Rel(analytics_engine, meta_db, "Читает метаданные из")
+
+Rel(medical_api, medical_db, "Работает с")
+Rel(fintech_api, fintech_db, "Работает с")
+Rel(ai_api, ai_db, "Работает с")
+
+Rel(medical_api, legacy_dwh, "Мигрирует данные из")
+Rel(fintech_api, legacy_dwh, "Мигрирует данные из")
+
+Rel(legacy_ui, legacy_dwh, "Работает с")
+
+@enduml
