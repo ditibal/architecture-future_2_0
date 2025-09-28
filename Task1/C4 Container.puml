@@ -10,24 +10,26 @@ System_Boundary(c1, "Будущее 2.0") {
 
     Container(portal, "Портал самообслуживания", "React/Angular", "Веб-приложение для аналитики и отчетности")
     Container(auth, "Сервис аутентификации", "OAuth2/OpenID Connect", "Централизованная аутентификация и авторизация")
-    
+
     ContainerDb(meta_db, "Мета-база данных", "PostgreSQL", "Хранилище метаданных, моделей данных и прав доступа")
-    
+
     Container(api_gateway, "API Gateway", "Kong/AWS API Gateway", "Единая точка входа для всех сервисов")
-    
+
     Container(analytics_engine, "Аналитический движок", "Apache Spark/Presto", "Обработка аналитических запросов")
     Container(data_lake, "Data Lake", "Apache Iceberg/Delta Lake", "Единое хранилище сырых данных")
-    
+
     ContainerDb(dwh_modern, "Современный DWH", "ClickHouse/Redshift", "Оптимизированное хранилище для аналитики")
-    
+
     Container(medical_api, "Медицинский API", "REST/gRPC", "Предоставляет доступ к медицинским данным")
     Container(fintech_api, "Финтех API", "REST/gRPC", "Предоставляет доступ к финансовым данным")
     Container(ai_api, "ИИ API", "REST/gRPC", "Интеграция с ИИ-сервисами")
-    
+
     ContainerDb(medical_db, "Медицинская БД", "PostgreSQL", "База медицинских данных (без историй болезней)")
     ContainerDb(fintech_db, "Финтех БД", "PostgreSQL", "База финансовых данных")
     ContainerDb(ai_db, "ИИ БД", "PostgreSQL", "База данных ИИ-сервисов")
-    
+
+    Container(integration_service, "Сервис интеграции", "Apache Camel", "ETL-процессы, трансформации, миграция данных")
+
     Container(legacy_dwh, "Легаси DWH", "MS SQL Server 2008", "Существующее хранилище (на этапе миграции)")
     Container(legacy_ui, "Легаси UI", "Power Builder", "Старый интерфейс для операторов")
 }
@@ -53,8 +55,11 @@ Rel(medical_api, medical_db, "Работает с")
 Rel(fintech_api, fintech_db, "Работает с")
 Rel(ai_api, ai_db, "Работает с")
 
-Rel(medical_api, legacy_dwh, "Мигрирует данные из")
-Rel(fintech_api, legacy_dwh, "Мигрирует данные из")
+Rel(integration_service, legacy_dwh, "Читает данные из")
+Rel(integration_service, medical_db, "Загружает данные в")
+Rel(integration_service, fintech_db, "Загружает данные в")
+Rel(integration_service, ai_db, "Загружает данные в")
+Rel(integration_service, data_lake, "Загружает данные в")
 
 Rel(legacy_ui, legacy_dwh, "Работает с")
 
