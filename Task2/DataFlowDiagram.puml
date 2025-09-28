@@ -1,0 +1,53 @@
+@startuml
+title Data Flow Diagram - Будущее 2.0
+
+package "Источники данных" {
+  [Легаси DWH] as legacy
+  [Фармацевтические компании] as pharma
+  [Мед. оборудование] as equipment
+}
+
+package "Домены данных" {
+  [Клиники] as hospital
+  [Финансы] as finance
+  [ИИ-сервисы] as ai
+  [Поставщики] as suppliers
+  [Клиенты] as customers
+}
+
+package "Платформа данных" {
+  [Data Lake] as lake
+  [Портал самообслуживания] as portal
+  [Каталог данных] as catalog
+}
+
+' Потоки данных от источников
+legacy --> hospital: Данные о клиниках
+legacy --> finance: Финансовые данные
+legacy --> customers: Информация о клиентах
+
+pharma --> suppliers: Данные о поставках
+equipment --> suppliers: Данные об оборудовании
+
+' Взаимодействие между доменами
+hospital --> ai: Обезличенные метрики
+finance --> ai: Финансовые показатели
+suppliers --> ai: Данные о поставках
+customers --> ai: Профили клиентов
+
+hospital --> customers: История посещений
+finance --> customers: Финансовая активность
+
+' Интеграция с платформой
+hospital --> lake: Данные клиник
+finance --> lake: Финансовые данные
+ai --> lake: Результаты анализа
+suppliers --> lake: Данные поставок
+customers --> lake: Профили клиентов
+
+lake --> portal: Данные для отчётов
+catalog --> portal: Метаданные
+
+portal --> users: Отчёты и аналитика
+
+@enduml
